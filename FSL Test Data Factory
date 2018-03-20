@@ -1,0 +1,90 @@
+public static WorkOrder createFSLWorkOrder(Id workTypId, String woType, Id orderId, Account acct, Opportunity opportunity){
+        WorkOrder newWorkOrder = new WorkOrder(
+            Sold_Order__c = orderId,
+            Opportunity__c = opportunity.Id,
+            Work_Order_Type__c = woType,
+            WorkTypeId = workTypId
+        );
+        return newWorkOrder;
+    }
+
+    public static WorkType createFLSWorkType(String wtTypeName, Decimal estimateDuration, String durType){
+        WorkType newWorkType = new WorkType(
+            Name = wtTypeName,
+            EstimatedDuration = estimateDuration,
+            DurationType = durType
+        );
+        Database.insert(newWorkType);
+        Id newSkillId = [SELECT Id FROM Skill LIMIT 1].Id;
+        System.debug(LoggingLevel.INFO, 'newSkillId: ' + newSKillId);
+        SkillRequirement newSkillRq = new SkillRequirement(
+            RelatedRecordId = newWorkType.Id,
+            SkillId = newSkillId
+        );
+
+        Database.insert(newSkillRq);
+        return newWorkType;
+    }
+
+    public static ServiceAppointment createFSLServiceAppointment(Id workOrderId){
+        ServiceAppointment newServiceAppt = new ServiceAppointment(
+            ParentRecordId = workOrderId,
+            Duration = 1,
+            SchedStartTime = System.now(),
+            SchedEndTime = System.now().addHours(2),
+            DurationType = 'Hours'
+        );
+        return newServiceAppt;
+    }
+
+    public static AssignedResource createFSLAssignedResource(ServiceResource servResource, ServiceAppointment servAppt){
+        AssignedResource assignResource = new AssignedResource(
+            ServiceAppointmentId = servAppt.Id,
+            ServiceResourceId = servResource.Id,
+            EstimatedTravelTime = 100
+        );
+        return assignResource;
+    }
+    public static ServiceTerritory createFSLServiceTerritory(ServiceResource servRes, String territoryName){
+        Skill existingSkill = [SELECT Id FROM Skill LIMIT 1]; 
+        ServiceResourceSkill srs = new ServiceResourceSkill(
+            ServiceResourceId = servRes.Id,
+            SkillId = existingSkill.Id,
+            EffectiveStartDate = System.now().addDays(-1),
+            EffectiveEndDate = System.now().addDays(1)
+        );
+        Database.insert(srs);
+        ServiceResourceCapacity src = new ServiceResourceCapacity(
+            CapacityInWorkItems = 5,
+            ServiceResourceId = servRes.Id,
+            StartDate = Date.today(),
+            EndDate = Date.today(),
+            TimePeriod = 'Day'
+        );
+        Database.insert(src);
+
+        OperatingHours newOppHours = new OperatingHours(
+            Name = 'Test',
+            TimeZone = 'America/New_York'
+        );
+        Database.insert(newOppHours);
+
+        ServiceTerritory newServTerr = new ServiceTerritory(
+            Name = territoryName,
+            OperatingHoursId = newOppHours.Id,
+            Street = '123 Street', 
+            State = 'Minnesota', 
+            PostalCode = '12345',
+            isActive = true
+        );
+        Database.insert(newServTerr);
+        ServiceTerritoryMember newMember = new ServiceTerritoryMember(
+            OperatingHoursId = newOppHours.Id,
+            ServiceTerritoryId = newServTerr.Id,
+            ServiceResourceId = servRes.Id,
+            EffectiveStartDate = System.now().addDays(-1),
+            TerritoryType = 'P'
+        );
+        Database.insert(newMember);
+        return newServTerr;
+    }
