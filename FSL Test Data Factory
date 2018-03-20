@@ -1,3 +1,14 @@
+/* The below code was the order I created the objects in
+WorkOrder workOrd2 = TestDataFactoryStatic.createFSLWorkOrder(installTypeId, 'Install', orderId, testAccount, opportunity);
+        Database.insert(workOrd2); 
+        ServiceResource servResource2 = TestDataFactoryStatic.createFSLServiceResource(serviceUserInstaller.Id, 'Calvin','test2', storeConfigId);
+        Database.insert(servResource2);
+        TestDataFactoryStatic.createFSLServiceTerritory(servResource2, 'test2');
+        ServiceAppointment servAppt2 = TestDataFactoryStatic.createFSLServiceAppointment(workOrd2.Id);
+        Database.insert(servAppt2);
+        AssignedResource assignResource2 = TestDataFactoryStatic.createFSLAssignedResource(servResource2, servAppt2);
+        Database.insert(assignResource2);
+
 public static WorkOrder createFSLWorkOrder(Id workTypId, String woType, Id orderId, Account acct, Opportunity opportunity){
         WorkOrder newWorkOrder = new WorkOrder(
             Sold_Order__c = orderId,
@@ -7,6 +18,7 @@ public static WorkOrder createFSLWorkOrder(Id workTypId, String woType, Id order
         );
         return newWorkOrder;
     }
+*/
 
     public static WorkType createFLSWorkType(String wtTypeName, Decimal estimateDuration, String durType){
         WorkType newWorkType = new WorkType(
